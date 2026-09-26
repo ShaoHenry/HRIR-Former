@@ -659,7 +659,7 @@ footer{padding:40px 0 48px; color:var(--muted); font-size:.88rem; text-align:cen
     setLoading(on) { this.root.classList.toggle('is-loading', on); }
 
     // ----- transport -----
-    toggle() { if (this.playing) this.pause(); else this.play(); }
+    toggle() { if (this.playing || this.pending) this.pause(); else this.play(); }
 
     async play() {
       if (this.playing || this.busy) return;
@@ -668,6 +668,7 @@ footer{padding:40px 0 48px; color:var(--muted); font-size:.88rem; text-align:cen
       const ac = getCtx();
       if (ac.state !== 'running') { try { await ac.resume(); } catch (e) {} }
       this.busy = true;
+      this.pending = true;
       this.root.classList.add('started');
       this.root.classList.remove('has-error');
       if (!this.buffers) this.setLoading(true);
@@ -677,10 +678,11 @@ footer{padding:40px 0 48px; color:var(--muted); font-size:.88rem; text-align:cen
         if (this.offset >= this.duration - 0.05) this.offset = 0;
         // first start: give the videos a moment to buffer; afterwards start audio promptly (video catches up)
         await this.waitVideos(this.offset, this.everStarted ? 400 : 3000);
-      } catch (e) { this.busy = false; this.setLoading(false); return; }
+      } catch (e) { this.busy = false; this.pending = false; this.setLoading(false); return; }
       this.busy = false;
       this.setLoading(false);
       if (myGen !== this.gen || current !== this) return; // paused/switched away while loading
+      this.pending = false;
       this.startAt(this.offset);
     }
 
@@ -709,9 +711,8 @@ footer{padding:40px 0 48px; color:var(--muted); font-size:.88rem; text-align:cen
       this.root.classList.add('is-playing');
       this.ppBtn.setAttribute('aria-label', 'Pause');
       // Park the videos at the start position; they are started in loop() once the audio clock is really running.
-      this.videos.forEach(v => { v.playbackRate = 1; if (Math.abs(v.currentTime - offset) > 0.05) { try { v.currentTime = offset; } catch (e) {} } });
+      this.videos.forEach(v => { if (Math.abs(v.currentTime - offset) > 0.05) { try { v.currentTime = offset; } catch (e) {} } });
       this.videosRunning = false;
-      this.lastRateFix = 0;
       this.loop();
       updateActive();
     }
@@ -733,11 +734,16 @@ footer{padding:40px 0 48px; color:var(--muted); font-size:.88rem; text-align:cen
 
     pause() {
       this.gen++;
-      if (!this.playing) { this.busy = false; this.setLoading(false); if (current === this) current = null; updateActive(); return; }
+      this.pending = false;
+      if (!this.playing) {
+        this.busy = false; this.setLoading(false);
+        this.root.classList.remove('is-playing'); this.ppBtn.setAttribute('aria-label', 'Play');
+        if (current === this) current = null; updateActive(); return;
+      }
       this.offset = this.pos();
       this.playing = false;
       this.stopGraph(EDGE);
-      this.videos.forEach(v => { v.pause(); v.playbackRate = 1; });
+      this.videos.forEach(v => { v.pause(); });
       this.syncVideosHard(this.offset);
       this.root.classList.remove('is-playing');
       this.ppBtn.setAttribute('aria-label', 'Play');
@@ -750,7 +756,7 @@ footer{padding:40px 0 48px; color:var(--muted); font-size:.88rem; text-align:cen
       this.playing = false;
       this.stopGraph(EDGE);
       this.offset = 0;
-      this.videos.forEach(v => { v.pause(); v.playbackRate = 1; });
+      this.videos.forEach(v => { v.pause(); });
       this.syncVideosHard(0);
       this.root.classList.remove('is-playing');
       this.ppBtn.setAttribute('aria-label', 'Play');
@@ -759,11 +765,19 @@ footer{padding:40px 0 48px; color:var(--muted); font-size:.88rem; text-align:cen
       updateActive();
     }
 
-    seekTo(t) {
+    async seekTo(t) {
       t = Math.min(Math.max(0, t), this.duration - 0.05);
       if (!this.playing) { this.offset = t; this.syncVideosHard(t); this.renderTime(); return; }
+      // while playing: stop, let the videos land on the new position, then restart audio + video together
       this.stopGraph(EDGE);
       this.playing = false;
+      this.offset = t;
+      this.videos.forEach(v => v.pause());
+      const myGen = ++this.gen;
+      this.pending = true;
+      await this.waitVideos(t, 800);
+      if (myGen !== this.gen || current !== this) return;
+      this.pending = false;
       this.startAt(t);
     }
 
@@ -802,21 +816,16 @@ footer{padding:40px 0 48px; color:var(--muted); font-size:.88rem; text-align:cen
           this.videos.forEach(v => { const p = v.play(); if (p && p.catch) p.catch(() => {}); });
         }
       } else {
+        // Let the videos run on their own clock. Never touch playbackRate: on iOS Safari every
+        // rate change makes the video fall back to the previous keyframe (visible back-and-forth jumps).
+        // Only re-sync when a video is clearly off (e.g. after a network stall), at most once per 3 s.
         const now = performance.now();
-        const fixRate = now - this.lastRateFix > 250;
-        if (fixRate) this.lastRateFix = now;
         this.videos.forEach(v => {
           if (v.seeking || v.readyState < 3) return;          // seeking or buffering: leave it alone
           if (v.paused) { const p = v.play(); if (p && p.catch) p.catch(() => {}); return; }
-          const d = v.currentTime - t;
-          const ad = Math.abs(d);
-          if (ad > 0.6) {
-            // large drift only: one hard re-sync, then give it time to settle
-            if (now - (v._lastSeek || 0) > 2000) { v._lastSeek = now; v.playbackRate = 1; try { v.currentTime = t; } catch (e) {} }
-          } else if (fixRate) {
-            // small drift: nudge the playback rate (smooth, no visible jumps)
-            const r = ad > 0.05 ? Math.min(1.15, Math.max(0.85, 1 - d * 1.2)) : 1;
-            if (Math.abs(v.playbackRate - r) > 0.01) v.playbackRate = r;
+          if (Math.abs(v.currentTime - t) > 0.5 && now - (v._lastSeek || 0) > 3000) {
+            v._lastSeek = now;
+            try { v.currentTime = t; } catch (e) {}
           }
         });
       }
