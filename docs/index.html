@@ -641,7 +641,7 @@ footer{padding:40px 0 48px; color:var(--muted); font-size:.88rem; text-align:cen
       return this.loadP;
     }
     waitVideos(t, timeout) {
-      const ready = v => v.readyState >= 2 && Math.abs(v.currentTime - t) < 0.1;
+      const ready = v => v.readyState >= 3 && Math.abs(v.currentTime - t) < 0.1;
       return Promise.all(this.videos.map(v => new Promise(res => {
         if (ready(v)) return res();
         const done = () => { clearTimeout(to); v.removeEventListener('seeked', check); v.removeEventListener('loadeddata', check); v.removeEventListener('canplay', check); res(); };
@@ -676,7 +676,7 @@ footer{padding:40px 0 48px; color:var(--muted); font-size:.88rem; text-align:cen
         await this.load();
         if (this.offset >= this.duration - 0.05) this.offset = 0;
         // first start: give the videos a moment to buffer; afterwards start audio promptly (video catches up)
-        await this.waitVideos(this.offset, this.everStarted ? 400 : 2000);
+        await this.waitVideos(this.offset, this.everStarted ? 400 : 3000);
       } catch (e) { this.busy = false; this.setLoading(false); return; }
       this.busy = false;
       this.setLoading(false);
@@ -708,7 +708,9 @@ footer{padding:40px 0 48px; color:var(--muted); font-size:.88rem; text-align:cen
       this.everStarted = true;
       this.root.classList.add('is-playing');
       this.ppBtn.setAttribute('aria-label', 'Pause');
-      this.videos.forEach(v => { try { v.currentTime = offset; } catch (e) {} v.playbackRate = 1; const p = v.play(); if (p && p.catch) p.catch(() => {}); });
+      // Park the videos at the start position; they are started in loop() once the audio clock is really running.
+      this.videos.forEach(v => { v.playbackRate = 1; if (Math.abs(v.currentTime - offset) > 0.05) { try { v.currentTime = offset; } catch (e) {} } });
+      this.videosRunning = false;
       this.lastRateFix = 0;
       this.loop();
       updateActive();
@@ -778,7 +780,7 @@ footer{padding:40px 0 48px; color:var(--muted); font-size:.88rem; text-align:cen
 
     // ----- video sync & UI -----
     syncVideosHard(t) {
-      this.videos.forEach(v => { if (v.readyState >= 1) { try { v.currentTime = t; } catch (e) {} } });
+      this.videos.forEach(v => { if (v.readyState >= 1 && Math.abs(v.currentTime - t) > 0.02) { try { v.currentTime = t; } catch (e) {} } });
     }
     renderTime() {
       const t = this.pendingSeek != null ? this.pendingSeek : this.pos();
@@ -792,20 +794,32 @@ footer{padding:40px 0 48px; color:var(--muted); font-size:.88rem; text-align:cen
       const t = this.pos();
       if (t >= this.duration - 0.001) { this.ended(); return; }
       const ac = getCtx();
-      const vt = t - (ac.outputLatency || 0);   // what the listener hears right now
-      const now = performance.now();
-      const fixRate = now - this.lastRateFix > 200;
-      if (fixRate) this.lastRateFix = now;
-      this.videos.forEach(v => {
-        if (v.readyState < 2) return;
-        if (v.paused) { const p = v.play(); if (p && p.catch) p.catch(() => {}); }
-        const d = v.currentTime - vt;
-        if (Math.abs(d) > 0.25) { try { v.currentTime = Math.max(0, vt); } catch (e) {} v.playbackRate = 1; }
-        else if (fixRate) {
-          const r = Math.abs(d) > 0.03 ? Math.min(1.1, Math.max(0.9, 1 - d * 1.5)) : 1;
-          if (Math.abs(v.playbackRate - r) > 0.005) v.playbackRate = r;
+      if (!this.videosRunning) {
+        // A freshly created audio device can take a moment before its clock starts moving
+        // (especially on the very first play). Start the videos only when the audio really starts.
+        if (ac.currentTime >= this.t0) {
+          this.videosRunning = true;
+          this.videos.forEach(v => { const p = v.play(); if (p && p.catch) p.catch(() => {}); });
         }
-      });
+      } else {
+        const now = performance.now();
+        const fixRate = now - this.lastRateFix > 250;
+        if (fixRate) this.lastRateFix = now;
+        this.videos.forEach(v => {
+          if (v.seeking || v.readyState < 3) return;          // seeking or buffering: leave it alone
+          if (v.paused) { const p = v.play(); if (p && p.catch) p.catch(() => {}); return; }
+          const d = v.currentTime - t;
+          const ad = Math.abs(d);
+          if (ad > 0.6) {
+            // large drift only: one hard re-sync, then give it time to settle
+            if (now - (v._lastSeek || 0) > 2000) { v._lastSeek = now; v.playbackRate = 1; try { v.currentTime = t; } catch (e) {} }
+          } else if (fixRate) {
+            // small drift: nudge the playback rate (smooth, no visible jumps)
+            const r = ad > 0.05 ? Math.min(1.15, Math.max(0.85, 1 - d * 1.2)) : 1;
+            if (Math.abs(v.playbackRate - r) > 0.01) v.playbackRate = r;
+          }
+        });
+      }
       this.renderTime();
       requestAnimationFrame(() => this.loop());
     }
