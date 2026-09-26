@@ -1,24 +1,34 @@
-# HRIR-Former: Joint HRIR Inpainting
+# HRIR-Former: Grid-Free Time-Domain Reconstruction of Head-Related Impulse Responses with a Spatially Encoded Transformer (INTERSPEECH 2026)
 
-This repository provides the evaluation implementation for the following paper:
+[Project Webpage](https://shaohenry.github.io/HRIR-Former/) | [arXiv Paper](https://arxiv.org/pdf/2603.27998v2) | [Personal Academic Website](https://shaohenry.github.io/)
 
-**HRIR-Former: Grid-Free Time-Domain Reconstruction of Head-Related Impulse Responses with a Spatially Encoded Transformer**
+Official evaluation code for our **INTERSPEECH 2026** paper.
+
+**HRIR-Former** reconstructs a listener's head-related impulse responses **directly in the time domain** (magnitude and phase) at **any direction in 3D space** from **as few as 3 measured directions**.
+
+This repository currently provides evaluation code for HRIR spatial up-sampling from sparse spatial measurements.
+
+**Please note:**
+
+- The model was trained on free-field compensated HRIRs from the [SONICOM dataset](https://www.sonicom.eu/tools-and-resources/hrtf-dataset/), without minimum-phase preprocessing.
+- Evaluation on other datasets may require retraining or adaptation.
+- **The training code will be released soon.**
+
+## Citation
+
+If you use this code in your research, please cite:
 
 ```bibtex
-@misc{xu2026hrirformergridfreetimedomainreconstruction,
-      title={HRIR-Former: Grid-Free Time-Domain Reconstruction of Head-Related Impulse Responses with a Spatially Encoded Transformer},
-      author={Shaoheng Xu and Chunyi Sun and Jihui Zhang and Amy Bastine and Prasanga N. Samarasinghe and Thushara D. Abhayapala and Hongdong Li},
-      year={2026},
-      eprint={2603.27998},
-      archivePrefix={arXiv},
-      primaryClass={eess.AS},
-      url={https://arxiv.org/abs/2603.27998},
+@misc{xu2026hrirformer,
+    title={{HRIR-Former}: Grid-Free Time-Domain Reconstruction of Head-Related Impulse Responses with a Spatially Encoded Transformer},
+    author={Shaoheng Xu and Chunyi Sun and Jihui Zhang and Amy Bastine and Prasanga N. Samarasinghe and Thushara D. Abhayapala and Hongdong Li},
+    year={2026},
+    eprint={2603.27998},
+    archivePrefix={arXiv},
+    primaryClass={eess.AS},
+    url={https://arxiv.org/abs/2603.27998}
 }
 ```
-
-This repository currently contains the code required to evaluate the joint HRIR inpainting model from sparse spatial measurements.
-
-**The training code will be released soon.**
 
 ## HOW TO INSTALL
 
