@@ -74,16 +74,18 @@ header.hero{padding:56px 0 18px; text-align:center}
 .tldr b{color:var(--ink)}
 
 /* ---------- contributions ---------- */
-.contrib{display:grid; gap:14px; grid-template-columns:1fr; margin-top:20px}
-@media (min-width:760px){ .contrib{grid-template-columns:repeat(3,1fr)} }
+.contrib-layout{display:grid; gap:22px; margin-top:20px}
+.contrib{display:grid; gap:14px; grid-template-columns:1fr}
+@media (min-width:700px) and (max-width:899px){ .contrib{grid-template-columns:repeat(3,1fr)} }
+@media (min-width:900px){ .contrib-layout{grid-template-columns:minmax(0,1fr) 380px; gap:28px; align-items:center} }
+.setup-fig{margin:0; width:100%; max-width:380px; justify-self:center}
 .card{background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); padding:20px}
 .contrib .num{font:700 .82rem var(--mono); color:var(--accent); letter-spacing:.04em}
 .contrib h3{margin:6px 0 8px}
 .contrib ul{margin:0; padding-left:18px; color:var(--ink-2); font-size:.95rem}
 .contrib li{margin:3px 0}
 
-figure{margin:22px 0 0}
-figure.narrow{max-width:680px; margin-left:auto; margin-right:auto}
+figure{margin:22px 0 0; scroll-margin-top:16px}
 .fig{background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:14px; overflow:hidden}
 .fig img{display:block; width:100%; height:auto}
 figcaption{font-size:.9rem; color:var(--muted); margin-top:10px; line-height:1.5}
@@ -182,8 +184,40 @@ td.mean{font-weight:700}
 
 /* ---------- method / figures ---------- */
 .two{display:grid; gap:18px; grid-template-columns:1fr}
-.steps{margin:14px 0 0; padding-left:20px; color:var(--ink-2)}
-.steps li{margin:5px 0}
+/* architecture walkthrough (slides 7-12): spotlight glides between modules like PowerPoint Morph */
+.arch{--morph:cubic-bezier(.65,0,.35,1); --spot:#f2a31b}
+.arch-scroll{overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; overscroll-behavior-x:contain; scrollbar-width:thin; border-radius:6px}
+.arch-canvas{position:relative; min-width:880px; overflow:hidden}
+@media (max-width:719px){ .arch-canvas{width:1100px; min-width:0} }
+.fig .arch-canvas img{display:block; width:100%; height:auto}
+.arch-spot{position:absolute; box-sizing:border-box; left:0; top:0; width:100%; height:100%; border:3px solid var(--spot); border-radius:10px; box-shadow:0 0 0 2400px rgba(255,255,255,.62); pointer-events:none;
+  transition:left 1s var(--morph), top 1s var(--morph), width 1s var(--morph), height 1s var(--morph), opacity .6s ease, box-shadow .9s ease}
+.arch.is-overview .arch-spot{opacity:0; box-shadow:0 0 0 2400px rgba(255,255,255,0)}
+.arch-hot{position:absolute; margin:0; padding:0; border:0; border-radius:8px; background:transparent; cursor:pointer; -webkit-tap-highlight-color:transparent}
+@media (hover:hover){ .arch-hot:hover{background:rgba(242,163,27,.12)} }
+.arch-hint{display:none; white-space:nowrap}
+.arch.can-scroll .arch-hint{display:flex; align-items:center; gap:6px; margin-top:4px; white-space:normal}
+.arch-hint svg{width:16px; height:16px; flex:none}
+.arch-chips{display:flex; flex-wrap:wrap; gap:8px; margin-top:16px}
+.arch-chip{flex:1 1 auto; min-height:40px; padding:8px 14px; border-radius:999px; border:1px solid transparent; background:var(--surface); color:var(--ink-2); font:600 .9rem/1.2 var(--sans); cursor:pointer; transition:background .35s ease, color .35s ease, border-color .2s}
+.arch-chip:hover{border-color:var(--line-2)}
+.arch-chip[aria-selected="true"]{background:var(--accent); color:var(--accent-ink)}
+.arch-chip:focus-visible, .arch-nav button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.arch-panel{display:flex; align-items:center; gap:14px; margin-top:12px; padding:16px 16px 16px 18px; min-height:84px; background:var(--accent-soft); border-radius:var(--radius)}
+.arch-desc{flex:1; display:flex; align-items:center; gap:14px; animation:archIn .45s ease}
+.arch-desc[hidden]{display:none}
+@keyframes archIn{from{opacity:0; transform:translateY(5px)} to{opacity:1; transform:none}}
+.arch-badge{flex:none; width:42px; height:42px; border-radius:50%; background:var(--paper); color:var(--accent); display:grid; place-items:center}
+.arch-badge svg{width:21px; height:21px}
+.arch-text{margin:0; color:var(--ink-2); line-height:1.55}
+.arch-text .lbl{color:var(--accent); font-weight:700; margin-right:4px}
+.arch-text b{color:var(--ink)}
+.arch-nav{flex:none; display:flex; gap:6px}
+.arch-nav button{width:36px; height:36px; padding:0; border-radius:50%; border:1px solid var(--line-2); background:var(--paper); color:var(--ink); display:grid; place-items:center; cursor:pointer}
+.arch-nav button:hover{border-color:var(--ink-2)}
+.arch-nav svg{width:18px; height:18px}
+@media (max-width:599px){ .arch-panel{flex-wrap:wrap; row-gap:10px} .arch-desc{flex:1 1 100%; align-items:flex-start} .arch-nav{margin-left:auto} .arch-badge{width:36px; height:36px} }
+@media (prefers-reduced-motion:reduce){ .arch-spot{transition-duration:.01s} .arch-desc{animation:none} }
 
 /* ---------- bibtex / footer ---------- */
 .bib{position:relative; margin-top:16px}
@@ -248,6 +282,7 @@ footer{padding:40px 0 48px; color:var(--muted); font-size:.88rem; text-align:cen
     <div class="wrap">
       <p class="eyebrow">Our contributions</p>
       <h2>What HRIR-Former does</h2>
+      <div class="contrib-layout">
       <div class="contrib">
         <div class="card">
           <div class="num">01</div>
@@ -264,7 +299,7 @@ footer{padding:40px 0 48px; color:var(--muted); font-size:.88rem; text-align:cen
             <li>Query any direction in 3D space.</li>
             <li>Grid-free, continuous reconstruction.</li>
             <li>Supports datasets with different measurement configurations.</li>
-            <li>Enabled by sinusoidal geometric embeddings of the direction coordinates (<a href="#method">Figure&nbsp;2</a>).</li>
+            <li>Enabled by sinusoidal geometric embeddings of the direction coordinates (<a href="#method" data-arch-step="1">Figure&nbsp;4</a>).</li>
           </ul>
         </div>
         <div class="card">
@@ -275,10 +310,11 @@ footer{padding:40px 0 48px; color:var(--muted); font-size:.88rem; text-align:cen
           </ul>
         </div>
       </div>
-      <figure class="narrow">
-        <div class="fig"><img src="assets/img/fig-setup.webp" width="1600" height="696" loading="lazy" alt="A head surrounded by a sphere of candidate directions: a few measured positions in red and many unmeasured positions in white."></div>
+      <figure class="setup-fig">
+        <div class="fig"><img src="assets/img/fig-setup.webp" width="1174" height="1339" loading="lazy" alt="A head surrounded by a sphere of candidate directions: a few measured positions in red and many unmeasured positions in white."></div>
         <figcaption><b>Figure 1. HRIR spatial up-sampling.</b> Estimating HRIRs at unmeasured target directions (white) from a sparse set of measured directions (red).</figcaption>
       </figure>
+      </div>
     </div>
   </section>
 
@@ -302,7 +338,7 @@ footer{padding:40px 0 48px; color:var(--muted); font-size:.88rem; text-align:cen
 
       <ol class="listen-for">
         <li><b>Nearly identical.</b> The HRIR-Former rendering is almost indistinguishable from the ground-truth rendering: same source position, movement and timbre.</li>
-        <li><b>Sometimes even smoother.</b> Measured HRIRs carry small, unavoidable errors, e.g. from slight head movements of the subject during the measurement. They show up as tiny discontinuities between neighbouring directions (see <a href="#closer-look">Figure&nbsp;4</a>). HRIR-Former does not reproduce them, so the moving source can sound smoother than with the measured HRIRs.</li>
+        <li><b>Sometimes even smoother.</b> Measured HRIRs carry small, unavoidable errors, e.g. from slight head movements of the subject during the measurement. They show up as tiny discontinuities between neighbouring directions (see <a href="#fig-hrir-2d">Figure&nbsp;3</a>). HRIR-Former does not reproduce them, so the moving source can sound smoother than with the measured HRIRs.</li>
         <li><b>Close in the numbers, too.</b> Each example lists the NMSE and cosine distance between the two renderings (<a href="#metrics">details below</a>).</li>
       </ol>
 
@@ -444,11 +480,11 @@ footer{padding:40px 0 48px; color:var(--muted); font-size:.88rem; text-align:cen
       <h2>Reconstructed HRIRs</h2>
       <figure>
         <div class="fig"><img src="assets/img/fig-hrir-line.webp" width="2000" height="507" loading="lazy" alt="Left-ear HRIR over 256 samples: the estimated HRIR (dotted) closely follows the ground-truth HRIR (solid)."></div>
-        <figcaption><b>Figure 3.</b> Left-ear HRIR reconstruction for subject P0187 at (φ, θ, r) = (90°, 20°, 1.5 m) under M = 19: estimated HRIR (dashed) versus ground-truth HRIR (solid). Angular distance to the nearest measured direction: 35.2°. Both magnitude and phase (timing) are reconstructed directly in the time domain.</figcaption>
+        <figcaption><b>Figure 2.</b> Left-ear HRIR reconstruction for subject P0187 at (φ, θ, r) = (90°, 20°, 1.5 m) under M = 19: estimated HRIR (dashed) versus ground-truth HRIR (solid). Angular distance to the nearest measured direction: 35.2°. Both magnitude and phase (timing) are reconstructed directly in the time domain.</figcaption>
       </figure>
-      <figure>
+      <figure id="fig-hrir-2d">
         <div class="fig"><img src="assets/img/fig-hrir-2d.webp" width="2000" height="772" loading="lazy" alt="Stacked binaural HRIRs over 793 directions for ground truth (left) and estimation (right), with zoomed insets. The ground-truth insets show a small discontinuity; the estimate is smooth."></div>
-        <figcaption><b>Figure 4.</b> Stacked binaural HRIRs for subject P0187 under M = 19 over 793 directions (each column: one direction; left/right ears concatenated along time). Ground truth (left) and estimation (right). The zoomed insets show a small discontinuity between neighbouring directions in the measured HRIRs. The HRIR-Former estimate varies smoothly across directions, which is why its renderings can sound smoother than the ground truth. P0187 is also the subject of the pink-noise example.</figcaption>
+        <figcaption><b>Figure 3.</b> Stacked binaural HRIRs for subject P0187 under M = 19 over 793 directions (each column: one direction; left/right ears concatenated along time). Ground truth (left) and estimation (right). The zoomed insets show a small discontinuity between neighbouring directions in the measured HRIRs. The HRIR-Former estimate varies smoothly across directions, which is why its renderings can sound smoother than the ground truth. P0187 is also the subject of the pink-noise example.</figcaption>
       </figure>
     </div>
   </section>
@@ -458,16 +494,62 @@ footer{padding:40px 0 48px; color:var(--muted); font-size:.88rem; text-align:cen
     <div class="wrap">
       <p class="eyebrow">Method</p>
       <h2>HRIR-Former pipeline</h2>
-      <figure>
-        <div class="fig"><img src="assets/img/fig-pipeline.webp" width="2400" height="597" loading="lazy" alt="Pipeline diagram: measured HRIRs and direction embeddings go through an MLP, a Transformer encoder, ITD/ILD heads and a decoder, followed by reordering by direction and Conv1D temporal refinement."></div>
-        <figcaption><b>Figure 2.</b> Overview of the proposed HRIR-Former pipeline.</figcaption>
-      </figure>
-      <ol class="steps">
-        <li>Known HRIRs are projected into a latent space by an MLP-based signal encoder. Geometric embeddings of the direction coordinates (sinusoidal spatial features) are projected separately and added to the signal features.</li>
-        <li>A Transformer encoder processes measured and target directions jointly to capture global spatial dependencies.</li>
-        <li>A shared MLP decoder maps the contextual features to full-length binaural HRIRs for all directions. Auxiliary heads predict the ITD and ILD.</li>
-        <li>A lightweight Conv1D module refines the temporal structure.</li>
-      </ol>
+      <div class="arch is-overview" id="arch" data-no-hotkeys>
+        <figure>
+          <div class="fig arch-fig">
+            <div class="arch-scroll">
+              <div class="arch-canvas">
+                <img src="assets/img/fig-pipeline.webp" width="2400" height="597" loading="lazy" alt="Pipeline diagram: measured HRIRs and direction embeddings go through an MLP, a Transformer encoder, ITD/ILD heads and a decoder, followed by reordering by direction and Conv1D temporal refinement.">
+                <div class="arch-spot" aria-hidden="true"></div>
+              <button class="arch-hot" type="button" tabindex="-1" aria-hidden="true" data-i="1" style="left:26.71%;top:0.00%;width:8.79%;height:100.00%"></button>
+              <button class="arch-hot" type="button" tabindex="-1" aria-hidden="true" data-i="2" style="left:34.31%;top:0.00%;width:9.39%;height:100.00%"></button>
+              <button class="arch-hot" type="button" tabindex="-1" aria-hidden="true" data-i="3" style="left:45.91%;top:0.00%;width:22.89%;height:40.00%"></button>
+              <button class="arch-hot" type="button" tabindex="-1" aria-hidden="true" data-i="4" style="left:45.91%;top:40.00%;width:17.39%;height:60.00%"></button>
+              <button class="arch-hot" type="button" tabindex="-1" aria-hidden="true" data-i="5" style="left:78.31%;top:0.00%;width:3.79%;height:100.00%"></button>
+              </div>
+            </div>
+          </div>
+          <figcaption><b>Figure 4.</b> Overview of the proposed HRIR-Former pipeline. <span class="arch-hint"><svg aria-hidden="true" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="m18 8 4 4-4 4"></path><path d="M2 12h20"></path><path d="m6 8-4 4 4 4"></path></svg> Swipe the figure sideways, or tap a module to jump to it.</span></figcaption>
+        </figure>
+        <div class="arch-chips" role="tablist" aria-label="HRIR-Former modules">
+          <button class="arch-chip" type="button" role="tab" id="arch-tab-0" aria-controls="arch-panel-0" aria-selected="true" tabindex="0" data-i="0">Overview</button>
+          <button class="arch-chip" type="button" role="tab" id="arch-tab-1" aria-controls="arch-panel-1" aria-selected="false" tabindex="-1" data-i="1">Position encoding</button>
+          <button class="arch-chip" type="button" role="tab" id="arch-tab-2" aria-controls="arch-panel-2" aria-selected="false" tabindex="-1" data-i="2">Self-attention</button>
+          <button class="arch-chip" type="button" role="tab" id="arch-tab-3" aria-controls="arch-panel-3" aria-selected="false" tabindex="-1" data-i="3">ITD/ILD heads</button>
+          <button class="arch-chip" type="button" role="tab" id="arch-tab-4" aria-controls="arch-panel-4" aria-selected="false" tabindex="-1" data-i="4">HRIR decoder</button>
+          <button class="arch-chip" type="button" role="tab" id="arch-tab-5" aria-controls="arch-panel-5" aria-selected="false" tabindex="-1" data-i="5">Conv1D refinement</button>
+        </div>
+        <div class="arch-panel">
+          <div class="arch-desc" role="tabpanel" id="arch-panel-0" aria-labelledby="arch-tab-0">
+            <span class="arch-badge"><svg aria-hidden="true" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="8" x="3" y="3" rx="2"></rect><path d="M7 11v4a2 2 0 0 0 2 2h4"></path><rect width="8" height="8" x="13" y="13" rx="2"></rect></svg></span>
+            <p class="arch-text"><span class="lbl">Overview:</span> Input: <b>M measured HRIRs</b> and their directions&nbsp;&nbsp;→&nbsp;&nbsp;Output: HRIRs at <b>N arbitrary target directions</b>.</p>
+          </div>
+          <div class="arch-desc" role="tabpanel" id="arch-panel-1" aria-labelledby="arch-tab-1" hidden>
+            <span class="arch-badge"><svg aria-hidden="true" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><circle cx="19" cy="5" r="2"></circle><circle cx="5" cy="19" r="2"></circle><path d="M10.4 21.9a10 10 0 0 0 9.941-15.416"></path><path d="M13.5 2.1a10 10 0 0 0-9.841 15.416"></path></svg></span>
+            <p class="arch-text"><span class="lbl">Sinusoidal direction encoding:</span> Encodes spatial coordinates so that <b>any direction</b> in the continuous 360° space can be queried.</p>
+          </div>
+          <div class="arch-desc" role="tabpanel" id="arch-panel-2" aria-labelledby="arch-tab-2" hidden>
+            <span class="arch-badge"><svg aria-hidden="true" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path><path d="M20 3v4"></path><path d="M22 5h-4"></path><path d="M4 17v2"></path><path d="M5 18H3"></path></svg></span>
+            <p class="arch-text"><span class="lbl">Spatial self-attention:</span> Captures information <b>across directions</b>.</p>
+          </div>
+          <div class="arch-desc" role="tabpanel" id="arch-panel-3" aria-labelledby="arch-tab-3" hidden>
+            <span class="arch-badge"><svg aria-hidden="true" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8.5a6.5 6.5 0 1 1 13 0c0 6-6 6-6 10a3.5 3.5 0 1 1-7 0"></path><path d="M15 8.5a2.5 2.5 0 0 0-5 0v1a2 2 0 1 1 0 4"></path></svg></span>
+            <p class="arch-text"><span class="lbl">Auxiliary ITD/ILD heads:</span> Supervise binaural <b>timing (ITD)</b> and <b>level (ILD)</b> cues.</p>
+          </div>
+          <div class="arch-desc" role="tabpanel" id="arch-panel-4" aria-labelledby="arch-tab-4" hidden>
+            <span class="arch-badge"><svg aria-hidden="true" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M2 13a2 2 0 0 0 2-2V7a2 2 0 0 1 4 0v13a2 2 0 0 0 4 0V4a2 2 0 0 1 4 0v13a2 2 0 0 0 4 0v-4a2 2 0 0 1 2-2"></path></svg></span>
+            <p class="arch-text"><span class="lbl">Binaural HRIR decoder:</span> Directly predicts the <b>left- and right-ear HRIR waveforms</b>.</p>
+          </div>
+          <div class="arch-desc" role="tabpanel" id="arch-panel-5" aria-labelledby="arch-tab-5" hidden>
+            <span class="arch-badge"><svg aria-hidden="true" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"></path></svg></span>
+            <p class="arch-text"><span class="lbl">1D convolutional refinement:</span> Enhances local connections and <b>smooths out measurement errors and misalignment</b> in the input data.</p>
+          </div>
+          <div class="arch-nav">
+            <button type="button" class="arch-prev" aria-label="Previous module"><svg aria-hidden="true" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
+            <button type="button" class="arch-next" aria-label="Next module"><svg aria-hidden="true" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -887,6 +969,7 @@ footer{padding:40px 0 48px; color:var(--muted); font-size:.88rem; text-align:cen
   const typing = el => el && (el.isContentEditable || el.tagName === 'TEXTAREA' || (el.tagName === 'INPUT' && el.type !== 'range'));
   document.addEventListener('keydown', e => {
     if (e.metaKey || e.ctrlKey || e.altKey || typing(e.target)) return;
+    if (e.target && e.target.closest && e.target.closest('[data-no-hotkeys]')) return;
     const isSpace = e.code === 'Space' || e.key === ' ';
     const n = ['1', '2', '3'].indexOf(e.key);
     if (!isSpace && n < 0) return;
@@ -897,8 +980,70 @@ footer{padding:40px 0 48px; color:var(--muted); font-size:.88rem; text-align:cen
     else p.setCond(n);
   });
   document.addEventListener('keyup', e => {
-    if ((e.code === 'Space' || e.key === ' ') && e.target && e.target.tagName === 'BUTTON') e.preventDefault();
+    if ((e.code === 'Space' || e.key === ' ') && e.target && e.target.tagName === 'BUTTON' && !e.target.closest('[data-no-hotkeys]')) e.preventDefault();
   });
+
+  // ---------- Method: architecture walkthrough (slides 7-12) ----------
+  (() => {
+    const arch = document.getElementById('arch');
+    if (!arch) return;
+    // spotlight boxes as fractions of the figure (x, y, w, h), taken from the slides
+    const REG = [null,
+      [0.2671, 0.004, 0.0879, 0.992],   // position encoding
+      [0.3431, 0.004, 0.0939, 0.992],   // self-attention
+      [0.4591, 0.004, 0.2289, 0.421],   // ITD/ILD heads
+      [0.4591, 0.3851, 0.1739, 0.611],  // HRIR decoder
+      [0.7831, 0.004, 0.0379, 0.992]];  // Conv1D refinement
+    const scroller = arch.querySelector('.arch-scroll');
+    const canvas = arch.querySelector('.arch-canvas');
+    const spot = arch.querySelector('.arch-spot');
+    const tabs = Array.from(arch.querySelectorAll('.arch-chip'));
+    const panels = Array.from(arch.querySelectorAll('.arch-desc'));
+    const N = tabs.length;
+    let cur = 0;
+
+    const canScroll = () => scroller.scrollWidth > scroller.clientWidth + 2;
+    function centerOn(i, smooth) {
+      if (!canScroll()) return;
+      const r = REG[i];
+      const max = scroller.scrollWidth - scroller.clientWidth;
+      const left = r ? (r[0] + r[2] / 2) * canvas.offsetWidth - scroller.clientWidth / 2 : 0;
+      scroller.scrollTo({ left: Math.max(0, Math.min(max, left)), behavior: smooth ? 'smooth' : 'auto' });
+    }
+    function select(i, opts) {
+      opts = opts || {};
+      i = ((i % N) + N) % N;
+      cur = i;
+      const r = REG[i] || [0, 0, 1, 1];
+      spot.style.left = r[0] * 100 + '%'; spot.style.top = r[1] * 100 + '%';
+      spot.style.width = r[2] * 100 + '%'; spot.style.height = r[3] * 100 + '%';
+      arch.classList.toggle('is-overview', i === 0);
+      tabs.forEach((t, j) => { t.setAttribute('aria-selected', j === i ? 'true' : 'false'); t.tabIndex = j === i ? 0 : -1; });
+      panels.forEach((p, j) => { p.hidden = j !== i; });
+      if (opts.focus) tabs[i].focus({ preventScroll: true });
+      centerOn(i, opts.smooth !== false);
+    }
+
+    tabs.forEach((t, i) => t.addEventListener('click', () => select(i)));
+    arch.querySelectorAll('.arch-hot').forEach(h => h.addEventListener('click', () => select(+h.dataset.i)));
+    arch.querySelector('.arch-prev').addEventListener('click', () => select(cur - 1));
+    arch.querySelector('.arch-next').addEventListener('click', () => select(cur + 1));
+    arch.querySelector('.arch-chips').addEventListener('keydown', e => {
+      const k = { ArrowRight: cur + 1, ArrowDown: cur + 1, ArrowLeft: cur - 1, ArrowUp: cur - 1, Home: 0, End: N - 1 }[e.key];
+      if (k === undefined) return;
+      e.preventDefault();
+      select(k, { focus: true });
+    });
+    // links elsewhere on the page (e.g. contribution 02) can open a given module
+    document.querySelectorAll('[data-arch-step]').forEach(a => a.addEventListener('click', () => select(+a.dataset.archStep)));
+
+    const updScroll = () => arch.classList.toggle('can-scroll', canScroll());
+    window.addEventListener('resize', () => { updScroll(); centerOn(cur, false); });
+    const img = canvas.querySelector('img');
+    if (img.complete) updScroll(); else img.addEventListener('load', updScroll);
+    updScroll();
+    select(0, { smooth: false });
+  })();
 
   // ---------- BibTeX copy ----------
   const copyBtn = document.getElementById('copybib');
