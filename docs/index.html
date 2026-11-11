@@ -160,7 +160,6 @@ figcaption b{color:var(--ink-2)}
 .p-metrics{display:flex; flex-wrap:wrap; align-items:center; gap:8px 22px; margin-top:14px; padding-top:12px; border-top:1px dashed var(--line); font-size:.9rem; color:var(--muted)}
 .p-metrics .m{display:flex; align-items:baseline; gap:8px}
 .p-metrics .m b{font-size:1.12rem; color:var(--ink); font-variant-numeric:tabular-nums}
-.p-metrics .lr{font-size:.8rem; font-variant-numeric:tabular-nums}
 .p-status{font-size:.85rem; color:#b3261e; margin-top:8px; display:none}
 .player.has-error .p-status{display:block}
 
@@ -258,9 +257,13 @@ footer{padding:40px 0 48px; color:var(--muted); font-size:.88rem; text-align:cen
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 14v-2a9 9 0 0 1 18 0v2"/><rect x="3" y="14" width="4" height="7" rx="1.5"/><rect x="17" y="14" width="4" height="7" rx="1.5"/></svg>
         Listening Demo
       </a>
-      <a class="btn" href="https://arxiv.org/abs/2603.27998">
+      <a class="btn" href="https://doi.org/10.21437/Interspeech.2026-702">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h6"/></svg>
         Paper
+      </a>
+      <a class="btn" href="https://arxiv.org/abs/2603.27998">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 12h-5"/><path d="M15 8h-5"/><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"/></svg>
+        arXiv
       </a>
       <a class="btn" href="https://github.com/ShaoHenry/HRIR-Former">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 7-5 5 5 5M16 7l5 5-5 5"/></svg>
@@ -370,9 +373,8 @@ footer{padding:40px 0 48px; color:var(--muted); font-size:.88rem; text-align:cen
             <button class="cond" type="button" role="radio" aria-checked="false" data-i="2"><kbd>3</kbd><span><span class="nowrap">HRIR-Former</span> <span class="ours full">(ours)</span></span></button>
           </div>
           <div class="p-metrics" aria-label="HRIR-Former vs. ground-truth rendering">
-            <span>HRIR-Former vs. GT rendering</span>
-            <span class="m">NMSE <b>−15.86 dB</b><span class="lr">L −15.46 · R −16.26</span></span>
-            <span class="m">CD <b>0.0123</b><span class="lr">L 0.0127 · R 0.0119</span></span>
+            <span class="m">NMSE <b>−15.86 dB</b></span>
+            <span class="m">CD <b>0.0123</b></span>
           </div>
           <p class="p-status" role="status"></p>
         </article>
@@ -401,9 +403,8 @@ footer{padding:40px 0 48px; color:var(--muted); font-size:.88rem; text-align:cen
             <button class="cond" type="button" role="radio" aria-checked="false" data-i="2"><kbd>3</kbd><span><span class="nowrap">HRIR-Former</span> <span class="ours full">(ours)</span></span></button>
           </div>
           <div class="p-metrics" aria-label="HRIR-Former vs. ground-truth rendering">
-            <span>HRIR-Former vs. GT rendering</span>
-            <span class="m">NMSE <b>−12.42 dB</b><span class="lr">L −13.12 · R −11.72</span></span>
-            <span class="m">CD <b>0.0284</b><span class="lr">L 0.0243 · R 0.0325</span></span>
+            <span class="m">NMSE <b>−12.42 dB</b></span>
+            <span class="m">CD <b>0.0284</b></span>
           </div>
           <p class="p-status" role="status"></p>
         </article>
@@ -432,9 +433,8 @@ footer{padding:40px 0 48px; color:var(--muted); font-size:.88rem; text-align:cen
             <button class="cond" type="button" role="radio" aria-checked="false" data-i="2"><kbd>3</kbd><span><span class="nowrap">HRIR-Former</span> <span class="ours full">(ours)</span></span></button>
           </div>
           <div class="p-metrics" aria-label="HRIR-Former vs. ground-truth rendering">
-            <span>HRIR-Former vs. GT rendering</span>
-            <span class="m">NMSE <b>−15.22 dB</b><span class="lr">L −16.15 · R −14.30</span></span>
-            <span class="m">CD <b>0.0116</b><span class="lr">L 0.0114 · R 0.0119</span></span>
+            <span class="m">NMSE <b>−15.22 dB</b></span>
+            <span class="m">CD <b>0.0116</b></span>
           </div>
           <p class="p-status" role="status"></p>
         </article>
@@ -568,14 +568,14 @@ footer{padding:40px 0 48px; color:var(--muted); font-size:.88rem; text-align:cen
       <h2>BibTeX</h2>
       <div class="bib">
         <button class="copy" type="button" id="copybib">Copy</button>
-<pre id="bibtext">@misc{xu2026hrirformer,
-      title={HRIR-Former: Grid-Free Time-Domain Reconstruction of Head-Related Impulse Responses with a Spatially Encoded Transformer},
-      author={Shaoheng Xu and Chunyi Sun and Jihui Zhang and Amy Bastine and Prasanga N. Samarasinghe and Thushara D. Abhayapala and Hongdong Li},
-      year={2026},
-      eprint={2603.27998},
-      archivePrefix={arXiv},
-      primaryClass={eess.AS},
-      url={https://arxiv.org/abs/2603.27998},
+<pre id="bibtext">@inproceedings{xu26c_interspeech,
+  title     = {{HRIR-Former: Grid-Free Time-Domain Reconstruction of Head-Related Impulse Responses with a Spatially Encoded Transformer}},
+  author    = {Shaoheng Xu and Chunyi Sun and Jihui Zhang and Amy Bastine and Prasanga N. Samarasinghe and Thushara D. Abhayapala and Hongdong Li},
+  year      = {2026},
+  booktitle = {{Interspeech 2026}},
+  pages     = {690--695},
+  doi       = {10.21437/Interspeech.2026-702},
+  issn      = {2958-1796},
 }</pre>
       </div>
 
@@ -590,7 +590,7 @@ footer{padding:40px 0 48px; color:var(--muted); font-size:.88rem; text-align:cen
 
 <footer>
   <div class="wrap">
-    <a href="https://arxiv.org/abs/2603.27998">arXiv</a> &nbsp;·&nbsp; <a href="https://github.com/ShaoHenry/HRIR-Former">Code</a> &nbsp;·&nbsp; <a href="https://shaohenry.github.io">Shaoheng Xu</a>
+    <a href="https://doi.org/10.21437/Interspeech.2026-702">Paper</a> &nbsp;·&nbsp; <a href="https://arxiv.org/abs/2603.27998">arXiv</a> &nbsp;·&nbsp; <a href="https://github.com/ShaoHenry/HRIR-Former">Code</a> &nbsp;·&nbsp; <a href="https://shaohenry.github.io">Shaoheng Xu</a>
     <p style="margin-top:8px">The Australian National University · The University of Queensland · Interspeech 2026</p>
   </div>
 </footer>
