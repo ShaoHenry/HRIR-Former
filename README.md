@@ -1,6 +1,6 @@
 # HRIR-Former: Grid-Free Time-Domain Reconstruction of Head-Related Impulse Responses with a Spatially Encoded Transformer (INTERSPEECH 2026)
 
-[Project Webpage](https://shaohenry.github.io/HRIR-Former/) | [arXiv Paper](https://arxiv.org/pdf/2603.27998v2) | [Personal Academic Website](https://shaohenry.github.io/)
+[Project Webpage](https://shaohenry.github.io/HRIR-Former/) | [Paper (ISCA Archive)](https://www.isca-archive.org/interspeech_2026/xu26c_interspeech.html) | [arXiv Paper](https://arxiv.org/abs/2603.27998) | [Personal Academic Website](https://shaohenry.github.io/)
 
 Official evaluation code for our **INTERSPEECH 2026** paper.
 
@@ -19,14 +19,14 @@ This repository currently provides evaluation code for HRIR spatial up-sampling 
 If you use this code in your research, please cite:
 
 ```bibtex
-@misc{xu2026hrirformer,
-    title={{HRIR-Former}: Grid-Free Time-Domain Reconstruction of Head-Related Impulse Responses with a Spatially Encoded Transformer},
-    author={Shaoheng Xu and Chunyi Sun and Jihui Zhang and Amy Bastine and Prasanga N. Samarasinghe and Thushara D. Abhayapala and Hongdong Li},
-    year={2026},
-    eprint={2603.27998},
-    archivePrefix={arXiv},
-    primaryClass={eess.AS},
-    url={https://arxiv.org/abs/2603.27998}
+@inproceedings{xu26c_interspeech,
+  title     = {{HRIR-Former: Grid-Free Time-Domain Reconstruction of Head-Related Impulse Responses with a Spatially Encoded Transformer}},
+  author    = {Shaoheng Xu and Chunyi Sun and Jihui Zhang and Amy Bastine and Prasanga N. Samarasinghe and Thushara D. Abhayapala and Hongdong Li},
+  year      = {2026},
+  booktitle = {{Interspeech 2026}},
+  pages     = {690--695},
+  doi       = {10.21437/Interspeech.2026-702},
+  issn      = {2958-1796},
 }
 ```
 
