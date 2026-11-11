@@ -10,7 +10,7 @@ This repository currently provides evaluation code for HRIR spatial up-sampling 
 
 **Please note:**
 
-- The model was trained on free-field compensated HRIRs from the [SONICOM dataset](https://www.sonicom.eu/tools-and-resources/hrtf-dataset/), without minimum-phase preprocessing.
+- The model was trained on free-field compensated HRIRs from the [SONICOM dataset](https://www.axdesign.co.uk/tools-and-devices/sonicom-hrtf-dataset), without minimum-phase preprocessing.
 - Evaluation on other datasets may require retraining or adaptation.
 - **The training code will be released soon.**
 
